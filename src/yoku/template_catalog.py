@@ -34,6 +34,14 @@ class TemplateCatalog:
             raise CatalogValidationError(f"В шаблоне отсутствуют поля: {', '.join(missing)}")
         if template["id"] != template_id:
             raise CatalogValidationError("ID внутри шаблона не совпадает с именем файла.")
+        if template["schema_version"] != 1:
+            raise CatalogValidationError("schema_version шаблона должен быть равен 1.")
+        for field in ("format", "purpose", "language", "hook_template", "cta_template"):
+            if not isinstance(template[field], str) or not template[field].strip():
+                raise CatalogValidationError(f"Поле {field} должно быть непустой строкой.")
+        channels = template["intended_channels"]
+        if not isinstance(channels, list) or not channels or not all(isinstance(channel, str) and channel.strip() for channel in channels):
+            raise CatalogValidationError("intended_channels должен быть непустым списком непустых строк.")
         duration = template["target_duration_seconds"]
         if (
             not isinstance(duration, dict)

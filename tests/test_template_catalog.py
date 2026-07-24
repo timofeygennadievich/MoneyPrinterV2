@@ -37,3 +37,25 @@ class TemplateCatalogTests(unittest.TestCase):
     def test_path_traversal_is_rejected(self):
         with self.assertRaises(InvalidIdentifierError):
             TemplateCatalog(self.source.parent).load("../ozon-recipe")
+
+    def test_schema_version_must_be_one(self):
+        with self.assertRaises(CatalogValidationError):
+            self._catalog({"schema_version": 2}).load("ozon-recipe")
+
+    def test_string_fields_must_be_nonempty(self):
+        for field in ("format", "purpose", "language", "hook_template", "cta_template"):
+            with self.subTest(field=field):
+                with self.assertRaises(CatalogValidationError):
+                    self._catalog({field: "   "}).load("ozon-recipe")
+
+    def test_intended_channels_must_be_nonempty_strings(self):
+        for value in ([], ["Ozon", ""], "Ozon"):
+            with self.subTest(value=value):
+                with self.assertRaises(CatalogValidationError):
+                    self._catalog({"intended_channels": value}).load("ozon-recipe")
+
+    def test_duration_values_must_be_positive_numbers_not_bool(self):
+        for duration in ({"min": True, "max": 20}, {"min": 0, "max": 20}, {"min": 15, "max": False}):
+            with self.subTest(duration=duration):
+                with self.assertRaises(CatalogValidationError):
+                    self._catalog({"target_duration_seconds": duration}).load("ozon-recipe")

@@ -1,6 +1,7 @@
 """Create an atomic, human-review-only content package."""
 
 import json
+import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -77,5 +78,6 @@ def create_review_package(output_dir, product, template, result, claims_report, 
         for name, content in files.items():
             _atomic_write(folder / name, content)
     except OSError as error:
+        shutil.rmtree(folder, ignore_errors=True)
         raise ReviewPackageError(f"Не удалось записать пакет: {error}") from error
     return folder.resolve()

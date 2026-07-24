@@ -24,9 +24,32 @@ class ClaimsGuardTests(unittest.TestCase):
         self.assertIn("position", report["errors"][0])
 
     def test_incorrect_numeric_facts_fail(self):
-        for text in ("200 г в упаковке", "7 порций", "28 г на напиток", "объёмом 400 мл"):
+        for text in ("200 г в упаковке", "7 порций", "28 г на напиток", "напиток объёмом 400 мл"):
             with self.subTest(text=text):
                 self.assertEqual(check_claims(text, self.product)["status"], "FAIL")
+
+    def test_package_weight_contexts_fail(self):
+        for text in (
+            "200 г в упаковке",
+            "200 г смеси",
+            "упаковка 200 г",
+            "масса упаковки 200 г",
+            "в упаковке 200 граммов",
+        ):
+            with self.subTest(text=text):
+                report = check_claims(text, self.product)
+                self.assertEqual(report["status"], "FAIL")
+                self.assertEqual(report["errors"][0]["field"], "package_weight_g")
+
+    def test_drink_volume_contexts_are_relevant(self):
+        fail_report = check_claims("напиток объёмом 400 мл", self.product)
+        self.assertEqual(fail_report["status"], "FAIL")
+        self.assertEqual(fail_report["errors"][0]["field"], "drink_volume_ml")
+
+        water_report = check_claims("Добавьте 50 мл воды.", self.product)
+        self.assertNotIn("drink_volume_ml", [error.get("field") for error in water_report["errors"]])
+
+        self.assertEqual(check_claims("напиток объёмом 300 мл", self.product)["status"], "PASS")
 
     def test_other_country_fails(self):
         self.assertEqual(check_claims("Смесь произведена в России.", self.product)["status"], "FAIL")

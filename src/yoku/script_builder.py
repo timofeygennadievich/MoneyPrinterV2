@@ -10,12 +10,13 @@ def build_script(product, template):
         f'произведено в {product["country_of_origin"]}',
         product["positioning"],
     ]
+    product_label = f'{product["name"]} {product["brand"]}'
     script = (
         f'{product["servings"]} порций Bubble Tea дома из одной упаковки. '
-        f'В упаковке {product["package_weight_g"]} г смеси таро {product["brand"]} — '
+        f'В упаковке {product["package_weight_g"]} г: {product_label} — '
         f'по {product["dosage_g_per_drink"]} г на напиток объёмом '
         f'{product["drink_volume_ml"]} мл. Приготовьте напиток по инструкции на упаковке. '
-        f'Смесь произведена в {product["country_of_origin"]}. {product["positioning"]}.'
+        f'Произведено в {product["country_of_origin"]}. {product["positioning"]}.'
     )
     return {
         "title": f'{product["name"]} — {product["servings"]} порций дома',

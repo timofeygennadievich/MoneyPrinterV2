@@ -23,3 +23,14 @@ class ScriptBuilderTests(unittest.TestCase):
         lowered = self.result["script"].lower()
         for word in ("вода", "молоко", "лёд", "температур"):
             self.assertNotIn(word, lowered)
+
+    def test_synthetic_non_taro_product_does_not_add_taro(self):
+        product = dict(self.product)
+        product.update({
+            "id": "melon-100g",
+            "name": "Смесь медовая дыня для Bubble Tea",
+            "positioning": "Бабл-ти с медовой дыней дома как в кафе",
+        })
+        result = build_script(product, self.template)
+        self.assertNotIn("таро", result["script"].casefold())
+        self.assertIn(product["name"], result["script"])

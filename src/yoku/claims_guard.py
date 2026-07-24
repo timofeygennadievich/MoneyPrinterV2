@@ -32,15 +32,32 @@ def check_claims(script, product):
             })
 
     checks = (
-        (r"(?<!\d)(\d+(?:[.,]\d+)?)\s*(?:г|грамм(?:а|ов)?)\s+(?:в\s+упаковке|смеси)", "package_weight_g", "масса упаковки"),
+        (
+            r"(?:"
+            r"(?<!\d)(\d+(?:[.,]\d+)?)\s*(?:г|грамм(?:а|ов)?)\s+(?:в\s+упаковке|смеси)"
+            r"|упаковк(?:а|е|и)\s+(\d+(?:[.,]\d+)?)\s*(?:г|грамм(?:а|ов)?)"
+            r"|масса\s+упаковки\s+(\d+(?:[.,]\d+)?)\s*(?:г|грамм(?:а|ов)?)"
+            r")",
+            "package_weight_g",
+            "масса упаковки",
+        ),
         (r"(?<!\d)(\d+)\s+порци(?:я|и|й)\b", "servings", "количество порций"),
         (r"(?<!\d)(\d+(?:[.,]\d+)?)\s*(?:г|грамм(?:а|ов)?)\s+на\s+напиток", "dosage_g_per_drink", "дозировка"),
-        (r"(?<!\d)(\d+(?:[.,]\d+)?)\s*(?:мл|миллилитр(?:а|ов)?)\b", "drink_volume_ml", "объём напитка"),
+        (
+            r"(?:"
+            r"напиток\s+(?:объ[её]мом\s+)?(\d+(?:[.,]\d+)?)\s*(?:мл|миллилитр(?:а|ов)?)"
+            r"|объ[её]м\s+напитка\s+(\d+(?:[.,]\d+)?)\s*(?:мл|миллилитр(?:а|ов)?)"
+            r"|для\s+напитка\s+(\d+(?:[.,]\d+)?)\s*(?:мл|миллилитр(?:а|ов)?)"
+            r")",
+            "drink_volume_ml",
+            "объём напитка",
+        ),
     )
     for pattern, field, label in checks:
         expected = float(product[field])
         for match in re.finditer(pattern, script, re.IGNORECASE):
-            actual = float(match.group(1).replace(",", "."))
+            actual_text = next(group for group in match.groups() if group is not None)
+            actual = float(actual_text.replace(",", "."))
             if actual != expected:
                 errors.append({
                     "type": "incorrect_fact", "field": field,
