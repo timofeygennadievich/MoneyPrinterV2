@@ -16,6 +16,7 @@ on:
       - "tests/test_template_catalog.py"
       - "tests/test_yoku_catalog_v1.py"
       - "tests/test_storyboard_asset_pack.py"
+      - "tests/test_approved_assets_video.py"
       - ".github/workflows/yoku-tests.yml"
   workflow_dispatch:
 
@@ -45,6 +46,7 @@ jobs:
             tests.test_template_catalog \
             tests.test_yoku_catalog_v1 \
             tests.test_storyboard_asset_pack \
+            tests.test_approved_assets_video \
             2>&1 | tee yoku-test-output.txt
       - name: Upload test diagnostics
         if: always()
@@ -63,3 +65,35 @@ jobs:
           python src/yoku_main.py storyboard --product taro-200g --template ozon-objection --output-dir "$tmp_dir"
           python src/yoku_main.py storyboard --product taro-200g --template social-result --output-dir "$tmp_dir"
           test "$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 3
+      - name: Verify approved video dry run
+        shell: bash
+        run: |
+          tmp_assets="$(mktemp -d)"
+          tmp_output="$(mktemp -d)"
+          TMP_ASSETS="$tmp_assets" python - <<'PY'
+          import os
+          import struct
+          from pathlib import Path
+
+          root = Path(os.environ["TMP_ASSETS"])
+          folder = root / "assets/yoku/products/taro-100g"
+          folder.mkdir(parents=True)
+          payload = (
+              b"\x89PNG\r\n\x1a\n"
+              + struct.pack(">I", 13)
+              + b"IHDR"
+              + struct.pack(">II", 1080, 1440)
+          )
+          for name in (
+              "packshot-front.png", "drink-hero.png", "preparation-01.png",
+              "preparation-02.png", "product-detail.png", "cta-slide.png",
+          ):
+              (folder / name).write_bytes(payload)
+          PY
+          python src/yoku_main.py render-video \
+            --product taro-100g \
+            --template social-result \
+            --assets-root "$tmp_assets" \
+            --output-dir "$tmp_output" \
+            --dry-run
+          test "$(find "$tmp_output" -name render-plan.json | wc -l)" -eq 1
