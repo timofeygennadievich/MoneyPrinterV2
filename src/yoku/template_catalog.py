@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from string import Formatter
 
 from .exceptions import CatalogItemNotFoundError, CatalogValidationError
 from .product_catalog import _validate_id
@@ -10,7 +11,37 @@ REQUIRED_FIELDS = {
     "schema_version", "id", "format", "purpose", "language", "hook_template",
     "scene_templates", "cta_template", "target_duration_seconds",
     "requires_manual_review", "auto_publish", "intended_channels",
+    "script_sentences",
 }
+ALLOWED_PLACEHOLDERS = {
+    "product_name", "brand", "servings", "package_weight_g",
+    "dosage_g_per_drink", "drink_volume_ml", "country_of_origin",
+    "positioning", "cta",
+}
+
+
+def _validate_script_sentences(sentences):
+    if not isinstance(sentences, list) or not sentences or not all(
+        isinstance(sentence, str) and sentence.strip() for sentence in sentences
+    ):
+        raise CatalogValidationError("script_sentences должен быть непустым списком непустых строк.")
+    formatter = Formatter()
+    for sentence in sentences:
+        try:
+            fields = formatter.parse(sentence)
+            for _, field_name, format_spec, conversion in fields:
+                if field_name is not None and field_name not in ALLOWED_PLACEHOLDERS:
+                    raise CatalogValidationError(
+                        f"Недопустимый placeholder в script_sentences: {field_name}"
+                    )
+                if field_name is not None and (format_spec or conversion):
+                    raise CatalogValidationError(
+                        "Форматирование и преобразование placeholders запрещены."
+                    )
+        except ValueError as error:
+            raise CatalogValidationError(
+                f"Некорректный placeholder в script_sentences: {error}"
+            ) from error
 
 
 class TemplateCatalog:
@@ -54,6 +85,7 @@ class TemplateCatalog:
         scenes = template["scene_templates"]
         if not isinstance(scenes, list) or not scenes or not all(isinstance(scene, str) and scene.strip() for scene in scenes):
             raise CatalogValidationError("scene_templates должен быть непустым списком строк.")
+        _validate_script_sentences(template["script_sentences"])
         if template["requires_manual_review"] is not True:
             raise CatalogValidationError("Для шаблона обязательно ручное согласование.")
         if template["auto_publish"] is not False:

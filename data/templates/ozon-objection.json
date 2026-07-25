@@ -22,5 +22,13 @@
   "intended_channels": [
     "Ozon",
     "вертикальные социальные видео"
+  ],
+  "script_sentences": [
+    "Сколько напитков получится из одной упаковки?",
+    "{product_name} {brand}: {servings} порций из упаковки {package_weight_g} г.",
+    "По {dosage_g_per_drink} г на напиток объёмом {drink_volume_ml} мл.",
+    "Произведено в {country_of_origin}.",
+    "{positioning}.",
+    "{cta}"
   ]
 }

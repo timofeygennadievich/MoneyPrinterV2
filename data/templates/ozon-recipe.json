@@ -13,8 +13,23 @@
     "Призыв приготовить Bubble Tea дома."
   ],
   "cta_template": "Приготовьте Bubble Tea дома.",
-  "target_duration_seconds": {"min": 15, "max": 20},
+  "target_duration_seconds": {
+    "min": 15,
+    "max": 20
+  },
   "requires_manual_review": true,
   "auto_publish": false,
-  "intended_channels": ["Ozon", "вертикальные социальные видео"]
+  "intended_channels": [
+    "Ozon",
+    "вертикальные социальные видео"
+  ],
+  "script_sentences": [
+    "{servings} порций Bubble Tea дома из одной упаковки.",
+    "В упаковке {package_weight_g} г: {product_name} {brand}.",
+    "Используйте по {dosage_g_per_drink} г на напиток объёмом {drink_volume_ml} мл.",
+    "Приготовьте напиток по инструкции на упаковке.",
+    "Произведено в {country_of_origin}.",
+    "{positioning}.",
+    "{cta}"
+  ]
 }

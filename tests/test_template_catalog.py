@@ -54,6 +54,24 @@ class TemplateCatalogTests(unittest.TestCase):
                 with self.assertRaises(CatalogValidationError):
                     self._catalog({"intended_channels": value}).load("ozon-recipe")
 
+    def test_script_sentences_must_be_nonempty_strings(self):
+        for value in ([], [""], "{product_name}"):
+            with self.subTest(value=value):
+                with self.assertRaises(CatalogValidationError):
+                    self._catalog({"script_sentences": value}).load("ozon-recipe")
+
+    def test_unknown_script_placeholder_is_rejected(self):
+        with self.assertRaises(CatalogValidationError):
+            self._catalog({"script_sentences": ["{unknown}"]}).load("ozon-recipe")
+
+    def test_placeholder_attribute_access_is_rejected(self):
+        with self.assertRaises(CatalogValidationError):
+            self._catalog({"script_sentences": ["{product.name}"]}).load("ozon-recipe")
+
+    def test_placeholder_index_access_is_rejected(self):
+        with self.assertRaises(CatalogValidationError):
+            self._catalog({"script_sentences": ["{product_name[0]}"]}).load("ozon-recipe")
+
     def test_duration_values_must_be_positive_numbers_not_bool(self):
         for duration in ({"min": True, "max": 20}, {"min": 0, "max": 20}, {"min": 15, "max": False}):
             with self.subTest(duration=duration):

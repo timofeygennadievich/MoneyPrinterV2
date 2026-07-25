@@ -21,5 +21,13 @@
   "auto_publish": false,
   "intended_channels": [
     "вертикальные социальные видео"
+  ],
+  "script_sentences": [
+    "Готовый напиток крупным планом.",
+    "{product_name} {brand}.",
+    "{servings} порций из упаковки {package_weight_g} г.",
+    "По {dosage_g_per_drink} г на напиток объёмом {drink_volume_ml} мл.",
+    "{positioning}.",
+    "{cta}"
   ]
 }

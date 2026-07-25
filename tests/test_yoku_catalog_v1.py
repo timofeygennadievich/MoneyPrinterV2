@@ -50,11 +50,12 @@ class YokuCatalogV1Tests(unittest.TestCase):
                 self.assertFalse(template["auto_publish"])
 
     def test_builder_does_not_add_taro_to_other_products(self):
-        template = self.templates.load("ozon-recipe")
         for product_id in PRODUCT_IDS[2:]:
-            with self.subTest(product_id=product_id):
-                script = build_script(self.products.load(product_id), template)["script"]
-                self.assertNotIn("таро", script.casefold())
+            for template_id in TEMPLATE_IDS:
+                with self.subTest(product_id=product_id, template_id=template_id):
+                    template = self.templates.load(template_id)
+                    script = build_script(self.products.load(product_id), template)["script"]
+                    self.assertNotIn("таро", script.casefold())
 
     def test_every_product_script_passes_claims_guard(self):
         template = self.templates.load("ozon-recipe")
@@ -62,6 +63,22 @@ class YokuCatalogV1Tests(unittest.TestCase):
             with self.subTest(product_id=product_id):
                 product = self.products.load(product_id)
                 script = build_script(product, template)["script"]
+                self.assertEqual(check_claims(script, product)["status"], "PASS")
+
+    def test_templates_build_distinct_safe_scripts(self):
+        product = self.products.load("taro-200g")
+        scripts = {
+            template_id: build_script(product, self.templates.load(template_id))["script"]
+            for template_id in TEMPLATE_IDS
+        }
+        self.assertEqual(len(set(scripts.values())), len(TEMPLATE_IDS))
+        self.assertIn("по инструкции на упаковке", scripts["ozon-recipe"])
+        self.assertTrue(scripts["ozon-objection"].startswith(
+            "Сколько напитков получится из одной упаковки?"
+        ))
+        self.assertTrue(scripts["social-result"].startswith("Готовый напиток"))
+        for template_id, script in scripts.items():
+            with self.subTest(template_id=template_id):
                 self.assertEqual(check_claims(script, product)["status"], "PASS")
 
     def _assert_list_command(self, command, expected_ids):
