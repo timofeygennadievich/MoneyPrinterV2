@@ -69,15 +69,16 @@ All relevant documents can be found [here](docs/).
 
 ## Yoku Tea Video Factory
 
-Yoku Tea Video Factory is a safe MVP that reads a validated product card and a
-content template, builds a deterministic Russian-language script, checks its
-claims, and writes five files for manual review. Product cards live in
-`data/products/`, templates in `data/templates/`, and isolated implementation
+Yoku Tea Video Factory reads a validated product card and content template,
+builds a deterministic Russian-language script, checks its claims, and creates
+manual-review packages. Product cards live in `data/products/`, templates in
+`data/templates/`, media manifests in `data/media/`, and isolated implementation
 modules in `src/yoku/`.
 
-The MVP does **not** generate video, images, voice-over, or recipes; call LLMs,
-Ollama, external APIs, or websites; send messages; or publish content. Automatic
-publication is disabled, and every generated draft must be manually reviewed.
+The Yoku workflow does not generate images, invent packaging, call LLMs,
+Ollama, external APIs or websites, send messages, or publish content. It may
+assemble a local silent MP4 only from explicitly approved real Yoku Tea assets.
+Automatic publication remains disabled, and every result requires manual review.
 
 Run it from the repository root:
 
@@ -93,11 +94,9 @@ python src/yoku_main.py generate --product honey-melon-200g --template ozon-reci
 
 Available product cards are `taro-100g`, `taro-200g`, `thai-tea-200g`,
 `mokko-200g`, and `honey-melon-200g`. Available content templates are
-`ozon-recipe`, `ozon-objection`, and `social-result`. The two list commands only
-display the local catalog and do not create an output package.
+`ozon-recipe`, `ozon-objection`, and `social-result`.
 
-The command creates a directory such as
-`output/20260724-120000_taro-100g_ozon-recipe/`, containing `brief.json`,
+The `generate` command creates a directory containing `brief.json`,
 `script.txt`, `claims-report.json`, `metadata.json`, and `review.md`. Generated
 packages are ignored by Git.
 
@@ -113,35 +112,52 @@ the safe, empty `.env.example` template is versioned. A `PASS` from Claims Guard
 does not authorize publication: the review checklist must still be completed by
 a person, and `auto_publish` remains `false`.
 
-## Storyboard and asset workflow
+## Approved asset, storyboard and video workflow
 
-Real media stays local and must be placed in:
+Approved real media stays outside Git and must be placed under:
 
 ```text
 assets/yoku/products/<product_id>/
 ```
 
-Expected names are `packshot-front.png`, `drink-hero.jpg`,
-`preparation-01.jpg`, `preparation-02.jpg`, and `product-detail.jpg`.
-The first two are required. Product media folders are ignored by Git, while
-safe manifests remain versioned in `data/media/`.
+Each schema-version-2 manifest explicitly marks every asset with
+`approved=true` and a safe `source_type`. The current approved final-slide roles
+are:
+
+```text
+packshot-front.(png|jpg)
+drink-hero.(png|jpg)
+preparation-01.(png|jpg)
+preparation-02.(png|jpg)
+product-detail.(png|jpg)
+cta-slide.(png|jpg)
+```
+
+The exact extension is defined in `data/media/<product_id>.json`. Final Ozon
+slides are valid working assets because they were explicitly approved by the
+owner; the system does not silently treat arbitrary images as approved.
 
 Use the workflow from the repository root:
 
 ```bash
-python src/yoku_main.py list-assets
-python src/yoku_main.py validate-assets --product taro-200g
-python src/yoku_main.py validate-assets --product taro-200g --strict
-python src/yoku_main.py storyboard --product taro-200g --template ozon-recipe
+python src/yoku_main.py list-assets --assets-root /path/to/private/assets-root
+python src/yoku_main.py validate-assets --product taro-100g --assets-root /path/to/private/assets-root
+python src/yoku_main.py validate-assets --product taro-100g --assets-root /path/to/private/assets-root --strict
+python src/yoku_main.py storyboard --product taro-100g --template social-result --assets-root /path/to/private/assets-root
+python src/yoku_main.py render-video --product taro-100g --template social-result --assets-root /path/to/private/assets-root
 ```
 
 Normal validation reports missing files but exits successfully. Strict
-validation exits with code `1` when required files are missing. The `storyboard`
-command creates a seven-file draft package with a storyboard, shot list,
+validation exits with code `1` when required files are missing. Image inspection
+records dimensions and aspect ratio without uploading media or calling an
+external service.
+
+`storyboard` creates a seven-file draft package with a storyboard, shot list,
 voice-over text, draft SRT subtitles, asset report, metadata, and manual review
-checklist. It does not create a video or use external services. Every package
-must be reviewed before the next stage: local MP4 assembly from approved real
-Yoku Tea media.
+checklist. `render-video` creates a separate local package with `video.mp4`,
+`render-plan.json`, `metadata.json`, and `review.md`. It uses local FFmpeg,
+creates no voice-over, uses no network services, and never publishes the result.
+Use `--dry-run` to validate the complete render plan without creating MP4.
 
 ## Scripts
 
