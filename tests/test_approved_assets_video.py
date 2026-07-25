@@ -140,13 +140,20 @@ class ApprovedAssetsVideoTests(unittest.TestCase):
             self.assertFalse(metadata["audio_generated"])
             self.assertFalse(metadata["auto_publish"])
             self.assertFalse(metadata["external_services_used"])
+            self.assertEqual(
+                metadata["planned_duration_seconds"],
+                json.loads((folder / "render-plan.json").read_text(encoding="utf-8"))[
+                    "total_duration_seconds"
+                ],
+            )
 
-    def test_ffmpeg_command_has_no_shell_or_publication(self):
+    def test_ffmpeg_command_enforces_exact_duration(self):
         plan = {
             "width": 1080,
             "height": 1920,
             "fps": 30,
             "background": "0xF7F4EE",
+            "total_duration_seconds": 12.0,
         }
         command = build_ffmpeg_command(
             "/usr/bin/ffmpeg", Path("slides.ffconcat"), Path("video.mp4"), plan
@@ -154,6 +161,8 @@ class ApprovedAssetsVideoTests(unittest.TestCase):
         self.assertEqual(command[0], "/usr/bin/ffmpeg")
         self.assertIn("libx264", command)
         self.assertIn("-an", command)
+        self.assertIn("-t", command)
+        self.assertEqual(command[command.index("-t") + 1], "12.0")
         self.assertNotIn("shell", command)
 
     def test_render_video_cli_dry_run(self):
