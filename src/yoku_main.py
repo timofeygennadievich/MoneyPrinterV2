@@ -23,12 +23,29 @@ def build_parser():
     generate.add_argument("--product", required=True)
     generate.add_argument("--template", required=True)
     generate.add_argument("--output-dir", type=Path, default=ROOT / "output")
+    commands.add_parser("list-products", help="показать карточки товаров")
+    commands.add_parser("list-templates", help="показать шаблоны контента")
     return parser
 
 
 def main(argv=None):
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "list-products":
+            for product in ProductCatalog(ROOT / "data" / "products").list():
+                print(
+                    f'{product["id"]} — {product["name"]}, '
+                    f'{product["package_weight_g"]} г, {product["servings"]} порций'
+                )
+            return 0
+        if args.command == "list-templates":
+            for template in TemplateCatalog(ROOT / "data" / "templates").list():
+                duration = template["target_duration_seconds"]
+                print(
+                    f'{template["id"]} — {template["purpose"]}, '
+                    f'{duration["min"]}–{duration["max"]} секунд'
+                )
+            return 0
         product = ProductCatalog(ROOT / "data" / "products").load(args.product)
         template = TemplateCatalog(ROOT / "data" / "templates").load(args.template)
         result = build_script(product, template)

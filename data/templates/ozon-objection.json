@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "id": "ozon-objection",
+  "format": "vertical_short",
+  "purpose": "Ответ на вопросы и возражения покупателей Ozon",
+  "language": "русский",
+  "hook_template": "Вопрос или сомнение покупателя.",
+  "scene_templates": [
+    "Вопрос или сомнение покупателя.",
+    "Упаковка и количество порций.",
+    "Дозировка и объём готового напитка.",
+    "Страна производства.",
+    "Призыв попробовать приготовить Bubble Tea дома."
+  ],
+  "cta_template": "Попробуйте приготовить Bubble Tea дома.",
+  "target_duration_seconds": {
+    "min": 15,
+    "max": 25
+  },
+  "requires_manual_review": true,
+  "auto_publish": false,
+  "intended_channels": [
+    "Ozon",
+    "вертикальные социальные видео"
+  ]
+}

@@ -64,6 +64,10 @@ class ProductCatalog:
                 raise CatalogValidationError(f"Поле {field} должно быть непустым списком строк.")
         return product
 
+    def list(self):
+        """Return every valid catalog product, ordered by its identifier."""
+        return [self.load(path.stem) for path in sorted(self.directory.glob("*.json"))]
+
 
 def load_product(product_id, directory):
     return ProductCatalog(directory).load(product_id)

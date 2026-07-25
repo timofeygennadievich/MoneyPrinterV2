@@ -60,6 +60,10 @@ class TemplateCatalog:
             raise CatalogValidationError("Автоматическая публикация должна быть отключена.")
         return template
 
+    def list(self):
+        """Return every valid content template, ordered by its identifier."""
+        return [self.load(path.stem) for path in sorted(self.directory.glob("*.json"))]
+
 
 def load_template(template_id, directory):
     return TemplateCatalog(directory).load(template_id)

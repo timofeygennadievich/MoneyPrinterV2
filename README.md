@@ -82,8 +82,19 @@ publication is disabled, and every generated draft must be manually reviewed.
 Run it from the repository root:
 
 ```bash
+python src/yoku_main.py list-products
+python src/yoku_main.py list-templates
 python src/yoku_main.py generate --product taro-100g --template ozon-recipe
+python src/yoku_main.py generate --product taro-200g --template ozon-recipe
+python src/yoku_main.py generate --product thai-tea-200g --template ozon-objection
+python src/yoku_main.py generate --product mokko-200g --template social-result
+python src/yoku_main.py generate --product honey-melon-200g --template ozon-recipe
 ```
+
+Available product cards are `taro-100g`, `taro-200g`, `thai-tea-200g`,
+`mokko-200g`, and `honey-melon-200g`. Available content templates are
+`ozon-recipe`, `ozon-objection`, and `social-result`. The two list commands only
+display the local catalog and do not create an output package.
 
 The command creates a directory such as
 `output/20260724-120000_taro-100g_ozon-recipe/`, containing `brief.json`,

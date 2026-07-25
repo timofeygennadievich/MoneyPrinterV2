@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "social-result",
+  "format": "vertical_short",
+  "purpose": "Демонстрация готового результата и продукта",
+  "language": "русский",
+  "hook_template": "Готовый напиток крупным планом.",
+  "scene_templates": [
+    "Готовый напиток крупным планом.",
+    "Название продукта.",
+    "Количество порций.",
+    "Дозировка и объём напитка.",
+    "Призыв приготовить Bubble Tea дома."
+  ],
+  "cta_template": "Приготовьте Bubble Tea дома.",
+  "target_duration_seconds": {
+    "min": 10,
+    "max": 20
+  },
+  "requires_manual_review": true,
+  "auto_publish": false,
+  "intended_channels": [
+    "вертикальные социальные видео"
+  ]
+}
