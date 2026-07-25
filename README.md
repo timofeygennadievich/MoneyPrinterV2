@@ -113,6 +113,36 @@ the safe, empty `.env.example` template is versioned. A `PASS` from Claims Guard
 does not authorize publication: the review checklist must still be completed by
 a person, and `auto_publish` remains `false`.
 
+## Storyboard and asset workflow
+
+Real media stays local and must be placed in:
+
+```text
+assets/yoku/products/<product_id>/
+```
+
+Expected names are `packshot-front.png`, `drink-hero.jpg`,
+`preparation-01.jpg`, `preparation-02.jpg`, and `product-detail.jpg`.
+The first two are required. Product media folders are ignored by Git, while
+safe manifests remain versioned in `data/media/`.
+
+Use the workflow from the repository root:
+
+```bash
+python src/yoku_main.py list-assets
+python src/yoku_main.py validate-assets --product taro-200g
+python src/yoku_main.py validate-assets --product taro-200g --strict
+python src/yoku_main.py storyboard --product taro-200g --template ozon-recipe
+```
+
+Normal validation reports missing files but exits successfully. Strict
+validation exits with code `1` when required files are missing. The `storyboard`
+command creates a seven-file draft package with a storyboard, shot list,
+voice-over text, draft SRT subtitles, asset report, metadata, and manual review
+checklist. It does not create a video or use external services. Every package
+must be reviewed before the next stage: local MP4 assembly from approved real
+Yoku Tea media.
+
 ## Scripts
 
 For easier usage, there are some scripts in the `scripts` directory that can be used to directly access the core functionality of MPV2 without the need for user interaction.

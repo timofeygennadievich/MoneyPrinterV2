@@ -1,0 +1,65 @@
+name: Yoku Tea tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/yoku/**"
+      - "src/yoku_main.py"
+      - "data/products/**"
+      - "data/templates/**"
+      - "data/media/**"
+      - "tests/test_claims_guard.py"
+      - "tests/test_cli.py"
+      - "tests/test_product_catalog.py"
+      - "tests/test_script_builder.py"
+      - "tests/test_template_catalog.py"
+      - "tests/test_yoku_catalog_v1.py"
+      - "tests/test_storyboard_asset_pack.py"
+      - ".github/workflows/yoku-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile Python sources
+        run: python -m compileall src
+      - name: Run isolated Yoku unit tests
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m unittest -v \
+            tests.test_claims_guard \
+            tests.test_cli \
+            tests.test_product_catalog \
+            tests.test_script_builder \
+            tests.test_template_catalog \
+            tests.test_yoku_catalog_v1 \
+            tests.test_storyboard_asset_pack \
+            2>&1 | tee yoku-test-output.txt
+      - name: Upload test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yoku-test-output
+          path: yoku-test-output.txt
+      - name: Verify asset catalogue
+        run: |
+          python src/yoku_main.py list-assets
+          python src/yoku_main.py validate-assets --product taro-200g
+      - name: Build storyboard drafts
+        run: |
+          tmp_dir="$(mktemp -d)"
+          python src/yoku_main.py storyboard --product taro-200g --template ozon-recipe --output-dir "$tmp_dir"
+          python src/yoku_main.py storyboard --product taro-200g --template ozon-objection --output-dir "$tmp_dir"
+          python src/yoku_main.py storyboard --product taro-200g --template social-result --output-dir "$tmp_dir"
+          test "$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 3

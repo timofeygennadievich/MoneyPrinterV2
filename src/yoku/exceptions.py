@@ -19,3 +19,11 @@ class CatalogValidationError(YokuError):
 
 class ReviewPackageError(YokuError):
     """Raised when a review package cannot safely be created."""
+
+
+class AssetValidationError(YokuError):
+    """Raised when a media manifest or asset path is unsafe or invalid."""
+
+
+class StoryboardPackageError(YokuError):
+    """Raised when a storyboard package cannot safely be created."""
