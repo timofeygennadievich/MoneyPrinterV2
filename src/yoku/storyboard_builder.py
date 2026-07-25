@@ -1,21 +1,30 @@
-"""Build deterministic storyboards from validated scripts and media manifests."""
+"""Build deterministic storyboards from validated scripts and approved media."""
 
 from pathlib import PurePosixPath
 
 ROLE_RULES = (
     (("готов", "результат", "напиток крупным"), "drink_hero"),
     (("упаков", "порци"), "packshot_front"),
-    (("приготов", "инструкц"), "preparation_01"),
-    (("детал",), "product_detail"),
+    (("приготов", "инструкц", "дозиров"), "preparation"),
+    (("детал", "вариант", "подач"), "product_detail"),
 )
 
 
-def _role_for(purpose, index):
-    text = purpose.casefold()
+def _role_for(purpose, voiceover, index, total, declared, preparation_index):
+    text = f"{purpose} {voiceover}".casefold()
+    if index == total - 1 and "cta_slide" in declared:
+        return "cta_slide", preparation_index
     for keywords, role in ROLE_RULES:
         if any(keyword in text for keyword in keywords):
-            return role
-    return "product_detail" if index else "drink_hero"
+            if role == "preparation":
+                candidates = ("preparation_01", "preparation_02")
+                selected = candidates[preparation_index % len(candidates)]
+                if selected not in declared:
+                    selected = "preparation_01"
+                return selected, preparation_index + 1
+            return role, preparation_index
+    fallback = "product_detail" if "product_detail" in declared else "packshot_front"
+    return fallback, preparation_index
 
 
 def _durations(texts, minimum, maximum):
@@ -58,29 +67,56 @@ def build_storyboard(product, template, script_result, manifest, asset_report):
         duration_range["min"],
         duration_range["max"],
     )
-    found = {entry["role"]: entry["path"] for entry in asset_report["found"]}
+    found = {entry["role"]: entry for entry in asset_report["found"]}
     declared = {
-        role: (PurePosixPath(manifest["base_directory"]) / item["filename"]).as_posix()
+        role: {
+            "path": (PurePosixPath(manifest["base_directory"]) / item["filename"]).as_posix(),
+            "approved": item.get("approved", False),
+            "source_type": item.get("source_type", "legacy_manifest"),
+        }
         for role, item in manifest["assets"].items()
     }
     scenes = []
     warnings = []
+    preparation_index = 0
+    total = len(voiceovers)
     for index, (purpose, voiceover, seconds) in enumerate(
-        zip(purposes, voiceovers, durations),
-        1,
+        zip(purposes, voiceovers, durations)
     ):
-        role = _role_for(purpose, index - 1)
-        asset_path = found.get(role) or declared.get(role)
-        asset_exists = role in found
+        role, preparation_index = _role_for(
+            purpose,
+            voiceover,
+            index,
+            total,
+            declared,
+            preparation_index,
+        )
+        found_entry = found.get(role)
+        declared_entry = declared.get(role)
+        asset_path = (
+            found_entry["path"] if found_entry else
+            declared_entry["path"] if declared_entry else None
+        )
+        asset_exists = found_entry is not None
+        asset_approved = bool(
+            (found_entry or declared_entry or {}).get("approved", False)
+        )
+        source_type = (found_entry or declared_entry or {}).get(
+            "source_type", "unknown"
+        )
         if not asset_exists:
-            warnings.append(f"Сцена {index}: отсутствует материал роли {role}.")
+            warnings.append(f"Сцена {index + 1}: отсутствует материал роли {role}.")
+        if not asset_approved:
+            warnings.append(f"Сцена {index + 1}: материал роли {role} не утверждён.")
         scenes.append({
-            "scene_number": index,
+            "scene_number": index + 1,
             "purpose": purpose,
             "voiceover": voiceover,
             "recommended_asset_role": role,
             "asset_path": asset_path,
             "asset_exists": asset_exists,
+            "asset_approved": asset_approved,
+            "asset_source_type": source_type,
             "duration_seconds": seconds,
             "on_screen_text": voiceover,
             "manual_review_notes": (
