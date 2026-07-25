@@ -1,0 +1,42 @@
+name: Yoku Tea tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/yoku/**"
+      - "src/yoku_main.py"
+      - "data/products/**"
+      - "data/templates/**"
+      - "data/media/**"
+      - "tests/**"
+      - ".github/workflows/yoku-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile Python sources
+        run: python -m compileall src
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Verify asset catalogue
+        run: |
+          python src/yoku_main.py list-assets
+          python src/yoku_main.py validate-assets --product taro-200g
+      - name: Build storyboard drafts
+        run: |
+          tmp_dir="$(mktemp -d)"
+          python src/yoku_main.py storyboard --product taro-200g --template ozon-recipe --output-dir "$tmp_dir"
+          python src/yoku_main.py storyboard --product taro-200g --template ozon-objection --output-dir "$tmp_dir"
+          python src/yoku_main.py storyboard --product taro-200g --template social-result --output-dir "$tmp_dir"
+          test "$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 3
