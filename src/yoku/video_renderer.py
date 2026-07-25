@@ -87,6 +87,7 @@ def _ffconcat_text(plan):
         lines.append(f'duration {scene["duration_seconds"]:.1f}')
     last = plan["scenes"][-1]["local_path"].replace("'", "'\\''")
     lines.append(f"file '{last}'")
+    lines.append(f'duration {1 / plan["fps"]:.6f}')
     return "\n".join(lines) + "\n"
 
 
@@ -105,6 +106,7 @@ def build_ffmpeg_command(ffmpeg, concat_path, output_path, plan):
         "-safe", "0",
         "-i", str(concat_path),
         "-vf", filter_value,
+        "-t", f'{plan["total_duration_seconds"]:.1f}',
         "-r", str(plan["fps"]),
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
@@ -153,6 +155,7 @@ def create_video_package(
             "width": width,
             "height": height,
             "fps": fps,
+            "planned_duration_seconds": plan["total_duration_seconds"],
         }
         if not dry_run:
             executable = shutil.which(ffmpeg)
