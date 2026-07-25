@@ -27,3 +27,7 @@ class AssetValidationError(YokuError):
 
 class StoryboardPackageError(YokuError):
     """Raised when a storyboard package cannot safely be created."""
+
+
+class VideoRenderError(YokuError):
+    """Raised when an approved local video cannot safely be rendered."""
