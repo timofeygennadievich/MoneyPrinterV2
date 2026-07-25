@@ -10,13 +10,19 @@ def build_script(product, template):
         f'произведено в {product["country_of_origin"]}',
         product["positioning"],
     ]
-    product_label = f'{product["name"]} {product["brand"]}'
-    script = (
-        f'{product["servings"]} порций Bubble Tea дома из одной упаковки. '
-        f'В упаковке {product["package_weight_g"]} г: {product_label} — '
-        f'по {product["dosage_g_per_drink"]} г на напиток объёмом '
-        f'{product["drink_volume_ml"]} мл. Приготовьте напиток по инструкции на упаковке. '
-        f'Произведено в {product["country_of_origin"]}. {product["positioning"]}.'
+    substitutions = {
+        "product_name": product["name"],
+        "brand": product["brand"],
+        "servings": product["servings"],
+        "package_weight_g": product["package_weight_g"],
+        "dosage_g_per_drink": product["dosage_g_per_drink"],
+        "drink_volume_ml": product["drink_volume_ml"],
+        "country_of_origin": product["country_of_origin"],
+        "positioning": product["positioning"],
+        "cta": template["cta_template"],
+    }
+    script = " ".join(
+        sentence.format_map(substitutions) for sentence in template["script_sentences"]
     )
     return {
         "title": f'{product["name"]} — {product["servings"]} порций дома',
