@@ -1,12 +1,13 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "product_id": "taro-200g",
   "base_directory": "assets/yoku/products/taro-200g",
   "assets": {
-    "packshot_front": {"filename": "packshot-front.png", "required": true, "description": "Реальная упаковка спереди с читаемой этикеткой"},
-    "drink_hero": {"filename": "drink-hero.jpg", "required": true, "description": "Готовый напиток крупным планом"},
-    "preparation_01": {"filename": "preparation-01.jpg", "required": false, "description": "Первый этап приготовления"},
-    "preparation_02": {"filename": "preparation-02.jpg", "required": false, "description": "Второй этап приготовления"},
-    "product_detail": {"filename": "product-detail.jpg", "required": false, "description": "Деталь упаковки или готового напитка"}
+    "packshot_front": {"filename": "packshot-front.jpg", "required": true, "description": "Финальный первый слайд Ozon с упаковкой", "approved": true, "source_type": "approved_final_slide"},
+    "drink_hero": {"filename": "drink-hero.jpg", "required": true, "description": "Финальный слайд с готовым напитком", "approved": true, "source_type": "approved_final_slide"},
+    "preparation_01": {"filename": "preparation-01.jpg", "required": false, "description": "Финальный слайд с первым этапом приготовления", "approved": true, "source_type": "approved_final_slide"},
+    "preparation_02": {"filename": "preparation-02.jpg", "required": false, "description": "Финальный слайд со следующим этапом приготовления", "approved": true, "source_type": "approved_final_slide"},
+    "product_detail": {"filename": "product-detail.jpg", "required": false, "description": "Финальный слайд с вариантами подачи", "approved": true, "source_type": "approved_final_slide"},
+    "cta_slide": {"filename": "cta-slide.jpg", "required": false, "description": "Финальный слайд с призывом приготовить Bubble Tea дома", "approved": true, "source_type": "approved_final_slide"}
   }
 }
