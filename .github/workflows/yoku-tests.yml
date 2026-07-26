@@ -9,6 +9,13 @@ on:
       - "data/products/**"
       - "data/templates/**"
       - "data/media/**"
+      - "data/motion/**"
+      - "motion/**"
+      - "scripts/extract_yoku_brand_fonts.py"
+      - "scripts/yoku_chromium_path.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - "THIRD_PARTY_NOTICES.md"
       - "tests/test_claims_guard.py"
       - "tests/test_cli.py"
       - "tests/test_product_catalog.py"
@@ -17,6 +24,7 @@ on:
       - "tests/test_yoku_catalog_v1.py"
       - "tests/test_storyboard_asset_pack.py"
       - "tests/test_approved_assets_video.py"
+      - "tests/test_motion_renderer_v2.py"
       - ".github/workflows/yoku-tests.yml"
   workflow_dispatch:
 
@@ -47,6 +55,7 @@ jobs:
             tests.test_yoku_catalog_v1 \
             tests.test_storyboard_asset_pack \
             tests.test_approved_assets_video \
+            tests.test_motion_renderer_v2 \
             2>&1 | tee yoku-test-output.txt
       - name: Upload test diagnostics
         if: always()

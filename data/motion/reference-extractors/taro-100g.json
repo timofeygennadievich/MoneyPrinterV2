@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "product_id": "taro-100g",
+  "source_kind": "approved_motion_pilot",
+  "assets": {
+    "logo": {
+      "filename": "logo.png",
+      "timestamp_seconds": 0.8,
+      "crop": {"width": 620, "height": 260, "x": 230, "y": 20}
+    },
+    "drink": {
+      "filename": "drink.png",
+      "timestamp_seconds": 1.55,
+      "crop": {"width": 650, "height": 1150, "x": 220, "y": 600}
+    },
+    "packshot": {
+      "filename": "packshot.png",
+      "timestamp_seconds": 2.8,
+      "crop": {"width": 560, "height": 920, "x": 100, "y": 700}
+    },
+    "powder": {
+      "filename": "powder.png",
+      "timestamp_seconds": 3.45,
+      "crop": {"width": 330, "height": 300, "x": 170, "y": 1100}
+    },
+    "toppings": {
+      "filename": "toppings.png",
+      "timestamp_seconds": 5.6,
+      "crop": {"width": 520, "height": 430, "x": 280, "y": 410}
+    }
+  }
+}

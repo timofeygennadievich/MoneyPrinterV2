@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Yoku Tea — __PRODUCT_SHORT__ __PACKAGE_WEIGHT__</title>
+    <script src="./assets/gsap.min.js"></script>
+    <style>
+      __FONT_FACE_CSS__
+
+      :root {
+        --lime: #c6d54f;
+        --pink: #e95296;
+        --gray: #979797;
+        --dark-gray: #676767;
+        --light-gray: #cbcbcb;
+        --white: #ffffff;
+        --black: #000000;
+        --safe-top: __SAFE_TOP__px;
+        --safe-right: __SAFE_RIGHT__px;
+        --safe-bottom: __SAFE_BOTTOM__px;
+        --safe-left: __SAFE_LEFT__px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        margin: 0;
+        overflow: hidden;
+        background: var(--white);
+        color: var(--black);
+      }
+
+      body {
+        font-family: "Yoku Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .scene-inner,
+      .background-fill {
+        position: absolute;
+        inset: 0;
+      }
+
+      .background-fill {
+        background:
+          radial-gradient(circle at 12% 31%, rgba(233, 82, 150, 0.18), transparent 27%),
+          radial-gradient(circle at 87% 63%, rgba(198, 213, 79, 0.17), transparent 25%),
+          radial-gradient(circle at 56% 94%, rgba(151, 151, 151, 0.13), transparent 34%),
+          var(--white);
+      }
+
+      .background-fill::after {
+        position: absolute;
+        inset: 0;
+        content: "";
+        opacity: 0.16;
+        background-image:
+          linear-gradient(rgba(103, 103, 103, 0.09) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(103, 103, 103, 0.09) 1px, transparent 1px);
+        background-size: 96px 96px;
+        mask-image: linear-gradient(to bottom, transparent, black 18%, black 80%, transparent);
+      }
+
+      .ambient-orb {
+        position: absolute;
+        border: 3px solid;
+        border-radius: 999px;
+      }
+
+      #ambient-orb-pink {
+        width: 360px;
+        height: 360px;
+        left: -170px;
+        top: 1210px;
+        border-color: rgba(233, 82, 150, 0.47);
+      }
+
+      #ambient-orb-lime {
+        width: 240px;
+        height: 240px;
+        right: -92px;
+        top: 310px;
+        border-color: rgba(198, 213, 79, 0.62);
+      }
+
+      #ambient-rule {
+        position: absolute;
+        width: 2px;
+        height: 560px;
+        right: 84px;
+        top: 810px;
+        background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.2), transparent);
+      }
+
+      .safe {
+        position: absolute;
+        inset: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        min-height: 52px;
+        padding: 10px 24px 8px;
+        border-radius: 999px;
+        background: var(--lime);
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .display {
+        margin: 0;
+        font-size: 112px;
+        font-weight: 800;
+        line-height: 0.94;
+        letter-spacing: -0.045em;
+        text-transform: uppercase;
+      }
+
+      .display .pink {
+        color: var(--pink);
+      }
+
+      .display .lime {
+        color: var(--lime);
+      }
+
+      .display .line {
+        display: block;
+      }
+
+      .subline {
+        margin: 18px 0 0;
+        color: var(--dark-gray);
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1.22;
+      }
+
+      .logo-crop,
+      .product-crop {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .feather {
+        mask-image: radial-gradient(ellipse at center, black 58%, rgba(0, 0, 0, 0.95) 68%, transparent 88%);
+      }
+
+      .object-shadow {
+        position: absolute;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.16);
+        filter: blur(22px);
+      }
+
+      .accent-rule {
+        height: 10px;
+        border-radius: 999px;
+        background: var(--pink);
+        transform-origin: left center;
+      }
+
+      .corner-code {
+        position: absolute;
+        right: var(--safe-right);
+        bottom: calc(var(--safe-bottom) + 16px);
+        color: var(--dark-gray);
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      /* Hook */
+      #hook-logo-wrap {
+        position: absolute;
+        width: 420px;
+        height: 176px;
+        left: var(--safe-left);
+        top: var(--safe-top);
+        overflow: hidden;
+      }
+
+      #hook-title {
+        position: absolute;
+        z-index: 4;
+        left: var(--safe-left);
+        top: calc(var(--safe-top) + 180px);
+        width: 850px;
+      }
+
+      #hook-title .accent-rule {
+        width: 280px;
+        margin-top: 30px;
+      }
+
+      #hook-drink-wrap {
+        position: absolute;
+        width: 930px;
+        height: 1370px;
+        left: 78px;
+        top: 430px;
+        will-change: transform, opacity;
+      }
+
+      #hook-drink-media {
+        width: 100%;
+        height: 100%;
+        will-change: transform;
+      }
+
+      #hook-shadow {
+        width: 500px;
+        left: 290px;
+        top: 1640px;
+      }
+
+      /* Packshot */
+      #pack-copy {
+        position: absolute;
+        z-index: 4;
+        left: var(--safe-left);
+        top: calc(var(--safe-top) + 32px);
+        width: 880px;
+      }
+
+      #pack-copy .display {
+        margin-top: 26px;
+        font-size: 104px;
+        line-height: 1.05;
+      }
+
+      #packshot-wrap {
+        position: absolute;
+        width: 810px;
+        height: 1260px;
+        right: -10px;
+        top: 490px;
+        will-change: transform, opacity;
+      }
+
+      #packshot-media {
+        width: 100%;
+        height: 100%;
+        will-change: transform;
+      }
+
+      #pack-fact {
+        position: absolute;
+        z-index: 5;
+        left: var(--safe-left);
+        top: 870px;
+        width: 330px;
+        padding: 38px 26px 34px;
+        border: 4px solid var(--black);
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      #pack-fact strong {
+        display: block;
+        color: var(--pink);
+        font-size: 82px;
+        line-height: 0.9;
+      }
+
+      #pack-fact span {
+        display: block;
+        margin-top: 18px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.05;
+        text-transform: uppercase;
+      }
+
+      /* Transformation */
+      #transform-header {
+        position: absolute;
+        z-index: 5;
+        left: var(--safe-left);
+        top: var(--safe-top);
+        width: 900px;
+      }
+
+      #stage-labels {
+        position: absolute;
+        z-index: 5;
+        left: var(--safe-left);
+        top: calc(var(--safe-top) + 142px);
+        width: 920px;
+        height: 120px;
+      }
+
+      .stage-label {
+        position: absolute;
+        inset: 0 auto auto 0;
+        font-size: 94px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+      }
+
+      #stage-powder {
+        color: var(--dark-gray);
+      }
+
+      #stage-drink {
+        color: var(--pink);
+      }
+
+      #stage-topping {
+        color: var(--black);
+        font-size: 78px;
+      }
+
+      #powder-wrap {
+        position: absolute;
+        width: 570px;
+        height: 620px;
+        left: 58px;
+        top: 690px;
+        will-change: transform, opacity;
+      }
+
+      #powder-media {
+        width: 100%;
+        height: 100%;
+      }
+
+      #transform-drink-wrap {
+        position: absolute;
+        width: 760px;
+        height: 1130px;
+        right: -8px;
+        top: 610px;
+        will-change: transform, opacity;
+      }
+
+      #transform-drink-media {
+        width: 100%;
+        height: 100%;
+        will-change: transform;
+      }
+
+      #toppings-wrap {
+        position: absolute;
+        width: 430px;
+        height: 520px;
+        right: 164px;
+        top: 520px;
+        will-change: transform, opacity;
+      }
+
+      #toppings-media {
+        width: 100%;
+        height: 100%;
+      }
+
+      #transform-arrow {
+        position: absolute;
+        width: 390px;
+        height: 8px;
+        left: 340px;
+        top: 1320px;
+        border-radius: 999px;
+        background: var(--lime);
+        transform-origin: left center;
+      }
+
+      #transform-arrow::after {
+        position: absolute;
+        width: 34px;
+        height: 34px;
+        right: -2px;
+        top: 50%;
+        content: "";
+        border-top: 8px solid var(--lime);
+        border-right: 8px solid var(--lime);
+        transform: translateY(-50%) rotate(45deg);
+      }
+
+      #powder-particles {
+        position: absolute;
+        width: 480px;
+        height: 580px;
+        left: 300px;
+        top: 700px;
+      }
+
+      .powder-particle {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--pink);
+        box-shadow: 0 0 18px rgba(233, 82, 150, 0.45);
+      }
+
+      .powder-particle:nth-child(2n) {
+        width: 12px;
+        height: 12px;
+        background: var(--lime);
+      }
+
+      .powder-particle:nth-child(3n) {
+        width: 24px;
+        height: 24px;
+        background: #b79ad7;
+      }
+
+      /* Facts */
+      #facts-heading {
+        position: absolute;
+        z-index: 5;
+        left: var(--safe-left);
+        top: var(--safe-top);
+        font-size: 48px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      #facts-stack {
+        position: absolute;
+        z-index: 5;
+        width: 930px;
+        left: 75px;
+        top: calc(var(--safe-top) + 150px);
+      }
+
+      .fact-pill {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 180px;
+        border: 4px solid var(--black);
+        border-radius: 90px;
+        font-size: 72px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.025em;
+        text-align: center;
+        text-transform: uppercase;
+        will-change: transform, opacity;
+      }
+
+      #fact-servings {
+        background: var(--pink);
+      }
+
+      #fact-dose {
+        margin-top: 42px;
+        background: var(--lime);
+      }
+
+      #facts-pack-wrap {
+        position: absolute;
+        width: 570px;
+        height: 840px;
+        left: -18px;
+        top: 950px;
+        will-change: transform, opacity;
+      }
+
+      #facts-drink-wrap {
+        position: absolute;
+        width: 630px;
+        height: 940px;
+        right: -12px;
+        top: 900px;
+        will-change: transform, opacity;
+      }
+
+      /* Final */
+      #final-logo-wrap {
+        position: absolute;
+        z-index: 5;
+        width: 450px;
+        height: 180px;
+        left: 315px;
+        top: var(--safe-top);
+      }
+
+      #final-copy {
+        position: absolute;
+        z-index: 5;
+        width: 940px;
+        left: 70px;
+        top: calc(var(--safe-top) + 190px);
+        text-align: center;
+      }
+
+      #final-copy .display {
+        font-size: 94px;
+        line-height: 1.02;
+      }
+
+      #final-copy .accent-rule {
+        width: 360px;
+        margin: 28px auto 0;
+      }
+
+      #final-pack-wrap {
+        position: absolute;
+        width: 610px;
+        height: 930px;
+        left: -28px;
+        top: 870px;
+        will-change: transform, opacity;
+      }
+
+      #final-drink-wrap {
+        position: absolute;
+        width: 670px;
+        height: 1000px;
+        right: -25px;
+        top: 820px;
+        will-change: transform, opacity;
+      }
+
+      #final-meta {
+        position: absolute;
+        z-index: 6;
+        left: var(--safe-left);
+        bottom: calc(var(--safe-bottom) + 6px);
+        min-width: 370px;
+        padding: 20px 28px 16px;
+        border-radius: 999px;
+        background: var(--black);
+        color: var(--white);
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="yoku-product-transformation"
+      data-start="0"
+      data-duration="__ROOT_DURATION__"
+      data-width="1080"
+      data-height="1920"
+      data-fps="30"
+    >
+      <section
+        id="background"
+        class="clip"
+        data-start="0"
+        data-duration="__ROOT_DURATION__"
+        data-track-index="0"
+      >
+        <div class="background-fill">
+          <div id="ambient-orb-pink" class="ambient-orb"></div>
+          <div id="ambient-orb-lime" class="ambient-orb"></div>
+          <div id="ambient-rule"></div>
+        </div>
+      </section>
+
+      <section
+        id="scene-hook"
+        class="clip"
+        data-start="__HOOK_START__"
+        data-duration="__HOOK_DURATION__"
+        data-track-index="1"
+      >
+        <div id="hook-inner" class="scene-inner">
+          <div id="hook-logo-wrap">
+            <img class="logo-crop feather" src="./assets/logo-hook.png" alt="" />
+          </div>
+          <div id="hook-title">
+            <h1 class="display">__PRODUCT_SHORT__</h1>
+            <p class="subline">__POSITIONING__</p>
+            <div class="accent-rule"></div>
+          </div>
+          <div id="hook-shadow" class="object-shadow"></div>
+          <div id="hook-drink-wrap">
+            <div id="hook-drink-media">
+              <img class="product-crop feather" src="./assets/drink-hook.png" alt="" />
+            </div>
+          </div>
+          <div class="corner-code" data-layout-ignore>Yoku Tea / __PRODUCT_SHORT__ __PACKAGE_WEIGHT__</div>
+        </div>
+      </section>
+
+      <section
+        id="scene-packshot"
+        class="clip"
+        data-start="__PACKSHOT_START__"
+        data-duration="__PACKSHOT_DURATION__"
+        data-track-index="2"
+      >
+        <div id="pack-inner" class="scene-inner">
+          <div id="pack-copy">
+            <span class="eyebrow">Домашний формат</span>
+            <h2 class="display">
+              <span class="line">Смесь</span>
+              <span class="line pink">__PRODUCT_SHORT__</span>
+            </h2>
+            <p class="subline">Упаковка __PACKAGE_WEIGHT__</p>
+          </div>
+          <div id="pack-fact">
+            <strong>__SERVINGS__</strong>
+            <span>напитков по __DRINK_VOLUME__</span>
+          </div>
+          <div id="packshot-wrap">
+            <div id="packshot-media">
+              <img class="product-crop feather" src="./assets/packshot-main.png" alt="" />
+            </div>
+          </div>
+          <div class="corner-code" data-layout-ignore>Точная упаковка SKU</div>
+        </div>
+      </section>
+
+      <section
+        id="scene-transformation"
+        class="clip"
+        data-start="__TRANSFORMATION_START__"
+        data-duration="__TRANSFORMATION_DURATION__"
+        data-track-index="3"
+      >
+        <div id="transform-inner" class="scene-inner">
+          <div id="transform-header">
+            <span class="eyebrow">Трансформация вкуса</span>
+          </div>
+          <div id="stage-labels">
+            <div id="stage-powder" class="stage-label">Порошок</div>
+            <div id="stage-drink" class="stage-label">Напиток</div>
+            <div id="stage-topping" class="stage-label">Лёд и топпинг</div>
+          </div>
+          <div id="powder-wrap">
+            <div id="powder-media">
+              <img class="product-crop feather" src="./assets/powder.png" alt="" />
+            </div>
+          </div>
+          <div id="powder-particles">
+            <i class="powder-particle" style="left: 8%; top: 68%"></i>
+            <i class="powder-particle" style="left: 18%; top: 48%"></i>
+            <i class="powder-particle" style="left: 29%; top: 73%"></i>
+            <i class="powder-particle" style="left: 38%; top: 35%"></i>
+            <i class="powder-particle" style="left: 46%; top: 59%"></i>
+            <i class="powder-particle" style="left: 56%; top: 22%"></i>
+            <i class="powder-particle" style="left: 66%; top: 46%"></i>
+            <i class="powder-particle" style="left: 74%; top: 15%"></i>
+            <i class="powder-particle" style="left: 82%; top: 58%"></i>
+            <i class="powder-particle" style="left: 92%; top: 31%"></i>
+          </div>
+          <div id="transform-arrow"></div>
+          <div id="transform-drink-wrap">
+            <div id="transform-drink-media">
+              <img class="product-crop feather" src="./assets/drink-transform.png" alt="" />
+            </div>
+          </div>
+          <div id="toppings-wrap">
+            <div id="toppings-media">
+              <img class="product-crop feather" src="./assets/toppings.png" alt="" />
+            </div>
+          </div>
+          <div class="corner-code" data-layout-ignore>Порошок → напиток → лёд</div>
+        </div>
+      </section>
+
+      <section
+        id="scene-facts"
+        class="clip"
+        data-start="__FACTS_START__"
+        data-duration="__FACTS_DURATION__"
+        data-track-index="4"
+      >
+        <div id="facts-inner" class="scene-inner">
+          <div id="facts-heading">Коротко о формате</div>
+          <div id="facts-stack">
+            <div id="fact-servings" class="fact-pill">__SERVINGS__ напитков</div>
+            <div id="fact-dose" class="fact-pill">__DOSAGE__ на __DRINK_VOLUME__</div>
+          </div>
+          <div id="facts-pack-wrap">
+            <img class="product-crop feather" src="./assets/packshot-facts.png" alt="" />
+          </div>
+          <div id="facts-drink-wrap">
+            <img class="product-crop feather" src="./assets/drink-facts.png" alt="" />
+          </div>
+          <div class="corner-code" data-layout-ignore>Проверенные товарные факты</div>
+        </div>
+      </section>
+
+      <section
+        id="scene-final"
+        class="clip"
+        data-start="__FINAL_START__"
+        data-duration="__FINAL_DURATION__"
+        data-track-index="5"
+      >
+        <div id="final-inner" class="scene-inner">
+          <div id="final-logo-wrap">
+            <img class="logo-crop feather" src="./assets/logo-final.png" alt="" />
+          </div>
+          <div id="final-copy">
+            <h2 class="display">
+              <span class="line">__FINAL_LINE_ONE__</span>
+              <span class="line pink">__FINAL_LINE_TWO__</span>
+            </h2>
+            <div class="accent-rule"></div>
+          </div>
+          <div id="final-pack-wrap">
+            <img class="product-crop feather" src="./assets/packshot-final.png" alt="" />
+          </div>
+          <div id="final-drink-wrap">
+            <img class="product-crop feather" src="./assets/drink-final.png" alt="" />
+          </div>
+          <div id="final-meta">__PRODUCT_SHORT__ • __PACKAGE_WEIGHT__ • __SERVINGS__ напитков</div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const timing = __TIMING_JSON__;
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({
+        paused: true,
+        defaults: { duration: 0.6, ease: "power3.out" },
+      });
+
+      const endOf = (beat) => beat.start + beat.duration;
+      const exitAt = (beat, exitDuration) => Math.max(
+        beat.start + beat.duration * 0.72,
+        endOf(beat) - exitDuration,
+      );
+
+      tl.fromTo(
+        "#ambient-orb-pink",
+        { x: -24, y: 18, scale: 0.96 },
+        { x: 62, y: -46, scale: 1.08, duration: timing.duration, ease: "sine.inOut" },
+        0,
+      );
+      tl.fromTo(
+        "#ambient-orb-lime",
+        { x: 20, y: -18, scale: 1.04 },
+        { x: -55, y: 72, scale: 0.92, duration: timing.duration, ease: "sine.inOut" },
+        0,
+      );
+      tl.fromTo(
+        "#ambient-rule",
+        { scaleY: 0.35, opacity: 0.22 },
+        { scaleY: 1, opacity: 0.72, duration: timing.duration, ease: "power1.inOut" },
+        0,
+      );
+
+      const hook = timing.beats.hook;
+      tl.fromTo(
+        "#hook-logo-wrap",
+        { opacity: 0, x: -70 },
+        { opacity: 1, x: 0, duration: 0.62, ease: "power4.out" },
+        hook.start + 0.02,
+      );
+      tl.fromTo(
+        "#hook-title",
+        { opacity: 0, y: -46 },
+        { opacity: 1, y: 0, duration: 0.78, ease: "expo.out" },
+        hook.start + 0.04,
+      );
+      tl.fromTo(
+        "#hook-title .accent-rule",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.58, ease: "power3.out" },
+        hook.start + 0.34,
+      );
+      tl.fromTo(
+        "#hook-drink-wrap",
+        { opacity: 0, y: 160, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.96, ease: "power4.out" },
+        hook.start,
+      );
+      tl.fromTo(
+        "#hook-drink-media",
+        { scale: 1 },
+        { scale: 1.045, duration: hook.duration, ease: "sine.inOut" },
+        hook.start,
+      );
+      tl.fromTo(
+        "#hook-shadow",
+        { opacity: 0, scale: 0.72 },
+        { opacity: 1, scale: 1, duration: 0.82, ease: "power2.out" },
+        hook.start + 0.08,
+      );
+      tl.to(
+        "#hook-inner",
+        { opacity: 0, y: -34, duration: 0.28, ease: "power3.in" },
+        exitAt(hook, 0.28),
+      );
+
+      const pack = timing.beats.packshot;
+      tl.fromTo(
+        "#pack-copy",
+        { opacity: 0, x: -86 },
+        { opacity: 1, x: 0, duration: 0.72, ease: "power4.out" },
+        pack.start + 0.02,
+      );
+      tl.fromTo(
+        "#packshot-wrap",
+        { opacity: 0, x: 170, rotation: 2.4, scale: 0.9 },
+        { opacity: 1, x: 0, rotation: 0, scale: 1, duration: 0.94, ease: "expo.out" },
+        pack.start + 0.02,
+      );
+      tl.fromTo(
+        "#packshot-media",
+        { scale: 1 },
+        { scale: 1.035, duration: pack.duration, ease: "sine.inOut" },
+        pack.start,
+      );
+      tl.fromTo(
+        "#pack-fact",
+        { opacity: 0, y: 70, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" },
+        pack.start + Math.min(0.58, pack.duration * 0.27),
+      );
+      tl.to(
+        "#pack-inner",
+        { opacity: 0, x: -30, duration: 0.3, ease: "power3.in" },
+        exitAt(pack, 0.3),
+      );
+
+      const transform = timing.beats.transformation;
+      const phase = transform.duration / 3;
+      tl.fromTo(
+        "#transform-header",
+        { opacity: 0, y: -36 },
+        { opacity: 1, y: 0, duration: 0.54, ease: "power3.out" },
+        transform.start + 0.02,
+      );
+      tl.fromTo(
+        "#stage-powder",
+        { opacity: 0, x: -48 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power4.out" },
+        transform.start + 0.03,
+      );
+      tl.fromTo(
+        "#powder-wrap",
+        { opacity: 0, x: -92, rotation: -4, scale: 0.86 },
+        { opacity: 1, x: 0, rotation: 0, scale: 1, duration: 0.72, ease: "expo.out" },
+        transform.start + 0.04,
+      );
+      tl.fromTo(
+        ".powder-particle",
+        { opacity: 0, x: -80, y: 110, scale: 0.4 },
+        {
+          opacity: 0.92,
+          x: (index) => 60 + index * 18,
+          y: (index) => -100 - (index % 4) * 34,
+          scale: 1,
+          rotation: (index) => index * 19,
+          duration: Math.min(1.15, phase * 0.85),
+          stagger: 0.045,
+          ease: "power2.out",
+        },
+        transform.start + 0.38,
+      );
+      tl.fromTo(
+        "#transform-arrow",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.7, ease: "power3.out" },
+        transform.start + phase * 0.56,
+      );
+      tl.to(
+        "#stage-powder",
+        { opacity: 0, x: 42, duration: 0.24, ease: "power2.in" },
+        transform.start + phase * 0.66,
+      );
+      tl.fromTo(
+        "#stage-drink",
+        { opacity: 0, x: -42 },
+        { opacity: 1, x: 0, duration: 0.45, ease: "expo.out" },
+        transform.start + phase * 0.94,
+      );
+      tl.fromTo(
+        "#transform-drink-wrap",
+        { opacity: 0, x: 150, y: 64, scale: 0.86 },
+        { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.88, ease: "power4.out" },
+        transform.start + phase * 0.92,
+      );
+      tl.fromTo(
+        "#transform-drink-media",
+        { scale: 1 },
+        { scale: 1.04, duration: phase * 1.9, ease: "sine.inOut" },
+        transform.start + phase,
+      );
+      tl.to(
+        "#stage-drink",
+        { opacity: 0, x: 44, duration: 0.24, ease: "power2.in" },
+        transform.start + phase * 1.62,
+      );
+      tl.fromTo(
+        "#stage-topping",
+        { opacity: 0, x: -44 },
+        { opacity: 1, x: 0, duration: 0.44, ease: "expo.out" },
+        transform.start + phase * 1.94,
+      );
+      tl.fromTo(
+        "#toppings-wrap",
+        { opacity: 0, y: -120, scale: 0.86 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.72, ease: "power4.out" },
+        transform.start + phase * 1.98,
+      );
+      tl.to(
+        "#transform-inner",
+        { opacity: 0, y: -24, duration: 0.28, ease: "power3.in" },
+        exitAt(transform, 0.28),
+      );
+
+      const facts = timing.beats.facts;
+      tl.fromTo(
+        "#facts-heading",
+        { opacity: 0, x: -54 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power4.out" },
+        facts.start + 0.02,
+      );
+      tl.fromTo(
+        "#fact-servings",
+        { opacity: 0, x: -130, rotation: -2.2, scale: 0.94 },
+        { opacity: 1, x: 0, rotation: 0, scale: 1, duration: 0.62, ease: "expo.out" },
+        facts.start + 0.04,
+      );
+      tl.fromTo(
+        "#fact-dose",
+        { opacity: 0, x: 130, rotation: 2.2, scale: 0.94 },
+        { opacity: 1, x: 0, rotation: 0, scale: 1, duration: 0.62, ease: "power4.out" },
+        facts.start + 0.28,
+      );
+      tl.fromTo(
+        "#facts-pack-wrap",
+        { opacity: 0, x: -110, y: 90 },
+        { opacity: 1, x: 0, y: 0, duration: Math.min(0.72, facts.duration * 0.34), ease: "power3.out" },
+        facts.start + Math.min(0.44, facts.duration * 0.15),
+      );
+      tl.fromTo(
+        "#facts-drink-wrap",
+        { opacity: 0, x: 110, y: 110 },
+        { opacity: 1, x: 0, y: 0, duration: Math.min(0.76, facts.duration * 0.36), ease: "expo.out" },
+        facts.start + Math.min(0.52, facts.duration * 0.19),
+      );
+      tl.to(
+        "#facts-inner",
+        { opacity: 0, scale: 0.985, duration: 0.28, ease: "power3.in" },
+        exitAt(facts, 0.28),
+      );
+
+      const finalBeat = timing.beats.final;
+      tl.fromTo(
+        "#final-logo-wrap",
+        { opacity: 0, y: -58 },
+        { opacity: 1, y: 0, duration: 0.68, ease: "power4.out" },
+        finalBeat.start + 0.02,
+      );
+      tl.fromTo(
+        "#final-copy",
+        { opacity: 0, y: -56, scale: 0.96 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.84, ease: "expo.out" },
+        finalBeat.start + 0.04,
+      );
+      tl.fromTo(
+        "#final-copy .accent-rule",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.66, ease: "power3.out" },
+        finalBeat.start + 0.78,
+      );
+      tl.fromTo(
+        "#final-pack-wrap",
+        { opacity: 0, x: -130, y: 110, rotation: -2.4 },
+        { opacity: 1, x: 0, y: 0, rotation: 0, duration: 0.94, ease: "power4.out" },
+        finalBeat.start + 0.08,
+      );
+      tl.fromTo(
+        "#final-drink-wrap",
+        { opacity: 0, x: 130, y: 100, rotation: 2.2 },
+        { opacity: 1, x: 0, y: 0, rotation: 0, duration: 1.02, ease: "expo.out" },
+        finalBeat.start + 0.12,
+      );
+      tl.fromTo(
+        "#final-meta",
+        { opacity: 0, y: 42 },
+        { opacity: 1, y: 0, duration: 0.58, ease: "power3.out" },
+        finalBeat.start + Math.min(1.18, finalBeat.duration * 0.32),
+      );
+      tl.fromTo(
+        "#final-pack-wrap, #final-drink-wrap",
+        { scale: 1 },
+        { scale: 1.035, duration: finalBeat.duration, ease: "sine.inOut" },
+        finalBeat.start,
+      );
+
+      window.__timelines["yoku-product-transformation"] = tl;
+    </script>
+  </body>
+</html>

@@ -8,6 +8,8 @@ niche.txt
 *.exe
 auto.sh
 .DS_Store
+node_modules/
+npm-debug.log*
 
 # Yoku Tea environment variables
 .env
@@ -21,6 +23,8 @@ output/*
 # Private assets and business data
 assets/yoku/private/
 assets/yoku/products/*/
+assets/yoku/brand/*
+!assets/yoku/brand/.gitkeep
 data/leads/
 
 # Logs

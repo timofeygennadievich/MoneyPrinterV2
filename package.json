@@ -1,0 +1,20 @@
+{
+  "name": "yoku-tea-motion-renderer",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Deterministic local motion rendering for the Yoku Tea Video Factory.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "motion:doctor": "hyperframes doctor --json",
+    "motion:lint": "hyperframes lint",
+    "motion:check": "hyperframes check",
+    "motion:render": "hyperframes render"
+  },
+  "dependencies": {
+    "@sparticuz/chromium": "149.0.0",
+    "gsap": "3.15.0",
+    "hyperframes": "0.7.72"
+  }
+}
