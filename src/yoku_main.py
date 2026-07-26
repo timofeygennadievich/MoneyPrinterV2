@@ -12,6 +12,7 @@ if str(SRC) not in sys.path:
 from yoku.asset_catalog import AssetCatalog, validate_assets
 from yoku.claims_guard import check_claims
 from yoku.exceptions import YokuError
+from yoku.motion_renderer import create_motion_campaign
 from yoku.product_catalog import ProductCatalog
 from yoku.review_package import create_review_package
 from yoku.script_builder import build_script
@@ -67,6 +68,41 @@ def build_parser():
     render.add_argument("--ffmpeg", default="ffmpeg")
     render.add_argument("--dry-run", action="store_true")
     _add_assets_root(render)
+
+    campaign = commands.add_parser(
+        "render-campaign",
+        help="собрать motion-версии для Ozon, Reels и Shorts",
+    )
+    campaign.add_argument("--product", required=True)
+    campaign.add_argument(
+        "--platforms",
+        default="ozon,reels,shorts",
+        help="список через запятую: ozon,reels,shorts",
+    )
+    campaign.add_argument("--output-dir", type=Path, default=ROOT / "output")
+    campaign.add_argument("--motion-assets-root", type=Path)
+    campaign.add_argument("--brand-assets-root", type=Path, default=ROOT / "assets/yoku/brand")
+    campaign.add_argument("--reference-video", type=Path)
+    campaign.add_argument("--prepare-from-reference", action="store_true")
+    campaign.add_argument("--overwrite-motion-assets", action="store_true")
+    campaign.add_argument(
+        "--profile-config",
+        type=Path,
+        default=ROOT / "data/motion/platforms.json",
+    )
+    campaign.add_argument(
+        "--template-path",
+        type=Path,
+        default=ROOT / "motion/templates/product-transformation/index.html",
+    )
+    campaign.add_argument("--ffmpeg", default="ffmpeg")
+    campaign.add_argument("--ffprobe", default="ffprobe")
+    campaign.add_argument(
+        "--hyperframes",
+        default=str(ROOT / "node_modules/.bin/hyperframes"),
+    )
+    campaign.add_argument("--browser-path")
+    campaign.add_argument("--dry-run", action="store_true")
     return parser
 
 
@@ -146,6 +182,36 @@ def main(argv=None):
             _print_asset_report(report)
             if args.strict and report["status"] == "INCOMPLETE":
                 return 1
+            return 0
+
+        if args.command == "render-campaign":
+            product = products.load(args.product)
+            motion_assets_root = args.motion_assets_root or (
+                ROOT / "assets/yoku/products" / args.product / "motion-v2"
+            )
+            extraction_spec = (
+                ROOT / "data/motion/reference-extractors" / f"{args.product}.json"
+            )
+            folder = create_motion_campaign(
+                args.output_dir,
+                product,
+                args.platforms,
+                repo_root=ROOT,
+                motion_assets_root=motion_assets_root,
+                brand_assets_root=args.brand_assets_root,
+                profile_config=args.profile_config,
+                template_path=args.template_path,
+                extraction_spec_path=extraction_spec,
+                reference_video=args.reference_video,
+                prepare_from_reference=args.prepare_from_reference,
+                overwrite_motion_assets=args.overwrite_motion_assets,
+                ffmpeg=args.ffmpeg,
+                ffprobe=args.ffprobe,
+                hyperframes=args.hyperframes,
+                browser_path=args.browser_path,
+                dry_run=args.dry_run,
+            )
+            print(folder)
             return 0
 
         if args.command in {"storyboard", "render-video"}:

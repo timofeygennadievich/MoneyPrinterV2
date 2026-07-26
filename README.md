@@ -76,9 +76,11 @@ manual-review packages. Product cards live in `data/products/`, templates in
 modules in `src/yoku/`.
 
 The Yoku workflow does not generate images, invent packaging, call LLMs,
-Ollama, external APIs or websites, send messages, or publish content. It may
-assemble a local silent MP4 only from explicitly approved real Yoku Tea assets.
-Automatic publication remains disabled, and every result requires manual review.
+Ollama, external APIs or websites, send messages, or publish content. It
+assembles video only from explicitly approved real Yoku Tea assets. The legacy
+renderer is silent; Motion Renderer v2 may synthesize deterministic local sound
+effects for social masters. Automatic publication remains disabled, and every
+result requires manual review.
 
 Run it from the repository root:
 
@@ -158,6 +160,28 @@ checklist. `render-video` creates a separate local package with `video.mp4`,
 `render-plan.json`, `metadata.json`, and `review.md`. It uses local FFmpeg,
 creates no voice-over, uses no network services, and never publishes the result.
 Use `--dry-run` to validate the complete render plan without creating MP4.
+
+## Motion Renderer v2 for Ozon, Reels and Shorts
+
+The v2 renderer replaces full-screen slide concatenation with one layered
+HTML/GSAP motion composition. It uses separate movement for the approved drink,
+packshot, powder, ice/toppings, logo, particles, and typography, then creates
+10.5-second Ozon, 15-second Reels, and 18-second Shorts masters.
+
+Install the pinned local renderer and build all three projects:
+
+```bash
+npm ci --ignore-scripts --no-fund
+python src/yoku_main.py render-campaign \
+  --product taro-100g \
+  --platforms ozon,reels,shorts \
+  --motion-assets-root assets/yoku/products/taro-100g/motion-v2
+```
+
+Every final MP4 gets an encoded-file technical report, cover, and ten-frame
+contact sheet. Publication remains disabled. Setup, asset preparation, QA, and
+licensing details are in
+[`docs/YokuMotionRendererV2.md`](docs/YokuMotionRendererV2.md).
 
 ## Scripts
 

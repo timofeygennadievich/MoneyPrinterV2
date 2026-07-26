@@ -31,3 +31,11 @@ class StoryboardPackageError(YokuError):
 
 class VideoRenderError(YokuError):
     """Raised when an approved local video cannot safely be rendered."""
+
+
+class MotionAssetError(YokuError):
+    """Raised when layered motion assets are missing, unsafe or unapproved."""
+
+
+class MotionRenderError(YokuError):
+    """Raised when Motion Renderer v2 cannot build or validate a campaign."""
